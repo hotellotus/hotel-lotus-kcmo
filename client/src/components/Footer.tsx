@@ -20,6 +20,7 @@ const policies = [
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
   { label: "Cancellation Policy", href: "/cancellation-policy" },
+  { label: "Pet Policy", href: "/pet-policy" },
 ];
 
 export default function Footer() {

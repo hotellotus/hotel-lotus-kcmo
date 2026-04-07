@@ -9,6 +9,7 @@ import Admin from "./pages/Admin";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CancellationPolicy from "./pages/CancellationPolicy";
+import PetPolicy from "./pages/PetPolicy";
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/privacy-policy"} component={PrivacyPolicy} />
       <Route path={"/terms-of-service"} component={TermsOfService} />
       <Route path={"/cancellation-policy"} component={CancellationPolicy} />
+      <Route path={"/pet-policy"} component={PetPolicy} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
