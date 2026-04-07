@@ -52,6 +52,14 @@ export function serveStatic(app: Express) {
     process.env.NODE_ENV === "development"
       ? path.resolve(import.meta.dirname, "../..", "dist", "public")
       : path.resolve(import.meta.dirname, "public");
+
+  const indexPath = path.resolve(distPath, "index.html");
+
+  // Startup diagnostics — these appear in Railway deploy logs
+  console.log(`[serveStatic] distPath: ${distPath}`);
+  console.log(`[serveStatic] distPath exists: ${fs.existsSync(distPath)}`);
+  console.log(`[serveStatic] index.html exists: ${fs.existsSync(indexPath)}`);
+
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
@@ -60,8 +68,14 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  // fall through to index.html — use callback so a missing file returns 404
+  // instead of crashing the process via an unhandled error event
+  app.use("*", (_req, res, next) => {
+    res.sendFile(indexPath, err => {
+      if (err) {
+        console.error(`[serveStatic] sendFile error: ${err.message}`);
+        next(err);
+      }
+    });
   });
 }

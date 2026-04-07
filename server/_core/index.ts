@@ -7,6 +7,14 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
+// Catch any unhandled errors so crashes appear in Railway deploy logs
+process.on("uncaughtException", err => {
+  console.error("[FATAL] Uncaught exception:", err.message, err.stack);
+});
+process.on("unhandledRejection", reason => {
+  console.error("[FATAL] Unhandled rejection:", reason);
+});
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -49,6 +57,14 @@ async function startServer() {
   } else {
     serveStatic(app);
   }
+
+  // Global Express error handler — must have 4 params to be recognised by Express
+  app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error("[Express] Error handler:", err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 
   const preferredPort = parseInt(process.env.PORT || "3000");
   // In production (Railway), bind directly to $PORT — never use findAvailablePort
