@@ -1,0 +1,19 @@
+# Disable the Nixpacks Caddy phase.
+#
+# Without this file, Nixpacks auto-includes Caddy as a two-port proxy:
+#   PORT (8080)          ← Caddy listens here; Railway healthcheck goes here
+#   NIXPACKS_APP_PORT (3000) ← Caddy proxies here; Railway edge proxy routes here
+#
+# Because our railway.json startCommand only runs Node (not Caddy), nothing
+# ever listens on 3000, so all browser traffic gets a 502. The healthcheck
+# happens to pass because it hits 8080 directly.
+#
+# Clearing the caddy phase makes Nixpacks treat this as a plain Node app.
+# Railway then routes both healthchecks and external traffic to $PORT (8080),
+# where Node is already listening.
+
+[phases.caddy]
+nixPkgs = []
+aptPkgs = []
+cmds = []
+dependsOn = []
