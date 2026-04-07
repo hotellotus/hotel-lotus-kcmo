@@ -11,7 +11,7 @@ import {
   updateTestimonial,
   deleteTestimonial,
 } from "./db";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
 export const appRouter = router({
@@ -103,21 +103,13 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false, // STARTTLS on port 587 (Railway blocks port 465 / IPv6)
-            auth: {
-              user: process.env.GMAIL_USER,
-              pass: process.env.GMAIL_PASSWORD,
-            },
-            socketOptions: { family: 4 }, // Force IPv4 — Railway doesn't support IPv6
-          } as any);
+          const resend = new Resend(process.env.RESEND_API_KEY);
 
           // Email to hotel
-          await transporter.sendMail({
-            from: process.env.GMAIL_USER,
-            to: "Hotellotusstadium@gmail.com",
+          await resend.emails.send({
+            from: "Hotel Lotus Contact <onboarding@resend.dev>",
+            to: ["Hotellotusstadium@gmail.com"],
+            replyTo: input.email,
             subject: `New Contact Form Submission from ${input.name}`,
             html: `
               <h2>New Contact Form Submission</h2>
@@ -130,9 +122,9 @@ export const appRouter = router({
           });
 
           // Confirmation email to guest
-          await transporter.sendMail({
-            from: process.env.GMAIL_USER,
-            to: input.email,
+          await resend.emails.send({
+            from: "Hotel Lotus KCMO <onboarding@resend.dev>",
+            to: [input.email],
             subject: "We received your message - Hotel Lotus KCMO",
             html: `
               <h2>Thank you for contacting Hotel Lotus KCMO</h2>
