@@ -107,7 +107,7 @@ export const appRouter = router({
 
           // Email to hotel
           await resend.emails.send({
-            from: "Hotel Lotus Contact <onboarding@resend.dev>",
+            from: "Hotel Lotus Contact <contact@lotuskcmo.com>",
             to: ["Hotellotusstadium@gmail.com"],
             replyTo: input.email,
             subject: `New Contact Form Submission from ${input.name}`,
@@ -123,7 +123,7 @@ export const appRouter = router({
 
           // Confirmation email to guest
           await resend.emails.send({
-            from: "Hotel Lotus KCMO <onboarding@resend.dev>",
+            from: "Hotel Lotus KCMO <contact@lotuskcmo.com>",
             to: [input.email],
             subject: "We received your message - Hotel Lotus KCMO",
             html: `
